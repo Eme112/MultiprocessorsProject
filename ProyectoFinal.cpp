@@ -1,17 +1,11 @@
-// ProyectoFinal.cpp : This file contains the 'main' function. Program execution begins and ends there.
-// Question: What happens if the size of the file is bigger than the input --> it has to be the same size
-// (e.g. declaring a 3x3 matrix when the file contains 15 elements).
-// 
-// TODO: Review maximum size of memmory allignment.
-// TODO: Calculate result using sequential algorithm.
-
 #include <iostream>
-#include <stdio.h>
+#include <chrono>
+#include <fstream>
+#include <cstdint>
 
-// Secuential global variables
 uint32_t rows_a, cols_a, rows_b, cols_b, rows_c, cols_c;
 uint32_t size_a, size_b, size_c;
-double* A = NULL, * B = NULL, * C = NULL;
+double* A = nullptr, * B = nullptr, * C = nullptr;
 
 int validateSize(int rows, int cols, char matrix) {
     FILE* file;
@@ -28,6 +22,10 @@ int validateSize(int rows, int cols, char matrix) {
     if (err != 0) {
         printf("Failed to open the file.\n");
         return 0; // Exit the program with an error
+    }
+    else
+    {
+        printf("File opened successfully.\n");
     }
 
     // Read double values until the end of the file
@@ -51,6 +49,7 @@ int validateSize(int rows, int cols, char matrix) {
     }
 }
 
+
 void askForInputsA() {
     printf("Enter number of rows for matrix A: ");
     scanf_s("%d", &rows_a);
@@ -66,7 +65,7 @@ void askForInputsB() {
 }
 
 uint8_t validateInputs() {
-    if (cols_a == rows_b) {                     // Validate multiplication
+    if (cols_a == rows_b) {
         printf("Valid multiplication\n");
         return 1;
     }
@@ -75,29 +74,117 @@ uint8_t validateInputs() {
         return 0;
     }
 }
+bool readMatrixFromFile(const std::string& filename, double*& matrix, uint32_t rows, uint32_t cols) {
+    std::ifstream inputFile(filename);
+    if (inputFile.is_open()) {
+        for (uint32_t i = 0; i < rows; i++) {
+            for (uint32_t j = 0; j < cols; j++) {
+                if (!(inputFile >> matrix[i * cols + j])) {
+                    inputFile.close();
+                    return false;  // Failed to read a value from the file
+                }
+            }
+        }
+        inputFile.close();
+        return true;  // Matrix values successfully read from the file
+    }
+    return false;  // Failed to open the file
+}
+
+void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t cols_a, uint32_t cols_b)
+{
+    // Realiza la multiplicación de matrices y almacena el resultado en C
+    for (uint32_t i = 0; i < rows_a; i++) {
+        for (uint32_t j = 0; j < cols_b; j++) {
+            C[i * cols_b + j] = 0;
+            for (uint32_t k = 0; k < cols_a; k++) {
+                C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
+            }
+        }
+    }
+}
+
 
 int main()
 {
-    // Ask for inputs andn validate sizes
     askForInputsA();
     size_a = validateSize(rows_a, cols_a, 'A');
-    if (size_a == 0)        // If dimensions for matrix A are invalid
+    if (size_a == 0)
         return 0;
     askForInputsB();
     size_b = validateSize(rows_b, cols_b, 'B');
-    if (size_b == 0)        // If dimensions for matrix B are invalid
+    if (size_b == 0)
         return 0;
-    if (!validateInputs())  // If multiplication is not valid
+    if (!validateInputs())
         return 0;
 
-    // Validate memmory given and store values of matrix A and B
-    A = (double*)malloc(size_a);
-    B = (double*)malloc(size_b);
-    if (A == NULL || B == NULL) {
-        printf("Not enough memmory for the desired sizes of matrices\n");
+    rows_c = rows_a;
+    cols_c = cols_b;
+    size_c = rows_c * cols_c;
+
+    A = (double*)malloc(size_a * sizeof(double));
+    B = (double*)malloc(size_b * sizeof(double));
+    C = (double*)malloc(size_c * sizeof(double));
+
+    if (A == nullptr || B == nullptr || C == nullptr) {
+        printf("Not enough memory for the desired sizes of matrices\n");
         return 0;
     }
+    else {
+        printf("Memory allocated successfully\n");
+    }
+    // Read matrix A from file
+    if (!readMatrixFromFile("matrizA.txt", A, rows_a, cols_a)) {
+        printf("Failed to read matrix A from file.\n");
+        free(A);
+        free(B);
+        free(C);
+        return 0;
+    }
+    else {
+        printf("Matrix A read from file.\n");
+    }
+    // Read matrix B from file
+    if (!readMatrixFromFile("matrizB.txt", B, rows_b, cols_b)) {
+        printf("Failed to read matrix B from file.\n");
+        free(A);
+        free(B);
+        free(C);
+        return 0;
+    }
+    else {
+        printf("Matrix B read from file.\n");
+    }
 
+
+    // Realizar la multiplicación de matrices y medir el tiempo de ejecución
+    auto start = std::chrono::high_resolution_clock::now();
+    multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+    printf("Matrix multiplication completed in %lld microseconds.\n", duration);
+
+    // Escribir la matriz resultante en el archivo matrizC.txt
+    std::ofstream outputFile("matrizC.txt");
+    if (outputFile.is_open()) {
+        for (uint32_t i = 0; i < rows_c; i++) {
+            for (uint32_t j = 0; j < cols_c; j++) {
+                outputFile << C[i * cols_c + j] << " ";
+            }
+            outputFile << "\n";
+        }
+        outputFile.close();
+        printf("Matrix C written to matrizC.txt.\n");
+    }
+    else {
+        printf("Failed to open matrizC.txt for writing.\n");
+    }
+
+    // Liberar memoria
+    free(A);
+    free(B);
+    free(C);
 
     return 0;
 }
