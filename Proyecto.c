@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
-
+#include <time.h>
 uint32_t rows_a, cols_a, rows_b, cols_b, rows_c, cols_c;
 uint32_t size_a, size_b, size_c;
 double* A = NULL;
@@ -138,7 +138,81 @@ int compareMatrices(double* C, const char* filename, uint32_t rows, uint32_t col
     return 0;
 }
 
+void print_table(double serial[5], double openmp[5], double cuda[5]) {
+    int rows = 8;
+    int columns = 4;
+    char* table[8][4] = {
+        {"Corrida ", "Serial", "OpenMP", "CUDA"},
+        {"1", "", "", ""},
+        {"2", "", "", ""},
+        {"3", "", "", ""},
+        {"4", "", "", ""},
+        {"5", "", "", ""},
+        {"Promedio", "", "", ""},
+        {"% vs Serial", "", "", ""}
+    };
+
+
+    // Print the table header
+    printf("| %-12s ", "Corrida ");
+    printf("| %-12s ", "Serial");
+    printf("| %-12s ", "OpenMP");
+    printf("| %-12s ", "CUDA");
+    printf("|\n");
+
+    // Print the horizontal line
+    for (int j = 0; j < columns; j++) {
+        printf("+--------------");
+    }
+    printf("+\n");
+
+    // Print the table rows
+    double promedio_serial = 0;
+    double promedio_openmp = 0;
+    double promedio_cuda = 0;
+    for(int i=0;i<5;i++){
+        printf("| %-12d ", i+1);
+        printf("| %-12f ", serial[i]);
+        printf("| %-12f ", openmp[i]);
+        printf("| %-12f ", cuda[i]);
+        printf("|\n");
+        promedio_serial += serial[i];
+        promedio_openmp += openmp[i];
+        promedio_cuda += cuda[i];
+    }
+    
+    promedio_serial = promedio_serial/5;
+    promedio_openmp = promedio_openmp/5;
+    promedio_cuda = promedio_cuda/5;
+    //print promedios
+    printf("| %-12s ", "Promedio");
+    printf("| %-12f ", promedio_serial);
+    printf("| %-12f ", promedio_openmp);
+    printf("| %-12f ", promedio_cuda);
+    printf("|\n");
+    //print porcentajes
+    printf("| %-12s ", "% vs Serial");
+    printf("| %-12f ", 100);
+    printf("| %-12f ", promedio_openmp/promedio_serial*100);
+    printf("| %-12f ", promedio_cuda/promedio_serial*100);
+    printf("|\n");
+
+    // Print the horizontal line
+    for (int j = 0; j < columns; j++) {
+        printf("+--------------");
+    }
+    printf("+\n");
+
+
+}
+
 int main() {
+    clock_t start, end;
+    double cpu_time_used;
+    double serial[5];
+    double openmp[5];
+    double cuda[5];
+
     askForInputsA();
     size_a = validateSize(rows_a, cols_a, 'A');
     if (size_a == 0)
@@ -184,10 +258,15 @@ int main() {
     } else {
         printf("Matrix B read from file.\n");
     }
-
-    multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
-
-    printf("Matrix multiplication completed.\n");
+    for(int i = 0; i < 5; i++){
+        start = clock();
+        multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        serial[i] = cpu_time_used;        
+    }
+    
+    printf("Serial multiplications completed.\n");
 
     FILE* outputFile = fopen("matrizC.txt", "w");
     if (outputFile != NULL) {
@@ -201,10 +280,31 @@ int main() {
     } else {
         printf("Failed to open matrizC.txt for writing.\n");
     }
+    //start openmp
+    for(int i = 0; i < 5; i++){
+        start = clock();
+        multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        openmp[i] = cpu_time_used;        
+    }
+    printf("Openmp multiplications completed.\n");
 
-    multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
-
-    printf("Matrix openmp multiplication completed.\n");
+    if (compareMatrices(C, "matrizC.txt", rows_c, cols_c)) {
+        printf("Matrices match.\n");
+    } else {
+        printf("Matrices do not match.\n");
+    }
+    //start cuda HERE
+    for(int i = 0; i < 5; i++){
+        start = clock();
+        //cambiar por cuda
+        multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        cuda[i] = cpu_time_used;        
+    }
+    printf("Cuda multiplications completed.\n");
 
     if (compareMatrices(C, "matrizC.txt", rows_c, cols_c)) {
         printf("Matrices match.\n");
@@ -212,6 +312,8 @@ int main() {
         printf("Matrices do not match.\n");
     }
 
+
+    print_table(serial, openmp, cuda);
     free(A);
     free(B);
     free(C);
