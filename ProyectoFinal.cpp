@@ -3,13 +3,14 @@
 #include <fstream>
 #include <cstdint>
 #include <omp.h>
-#include <pthread.h>
+//#include <pthread.h>
 #include <cmath>
 #include <iomanip>
 
 uint32_t rows_a, cols_a, rows_b, cols_b, rows_c, cols_c;
 uint32_t size_a, size_b, size_c;
 double* A = nullptr, * B = nullptr, * C = nullptr;
+clock_t start, end, duration;
 
 
 int validateSize(int rows, int cols, char matrix) {
@@ -206,10 +207,10 @@ int main()
     }
 
     // Realizar la multiplicación de matrices y medir el tiempo de ejecución
-    auto start = std::chrono::high_resolution_clock::now();
+    start = clock();
     multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    end = clock();
+    duration = end - start;
    
     printf("Matrix multiplication completed in %lld microseconds.\n", duration);
 
@@ -231,12 +232,12 @@ int main()
     }
 
      // Realizar la multiplicación de matrices y medir el tiempo de ejecución con openmp
-    auto start_openmp = std::chrono::high_resolution_clock::now();
+    start = clock();
     multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
-    auto end_openmp = std::chrono::high_resolution_clock::now();
-    auto duration_openmp = std::chrono::duration_cast<std::chrono::microseconds>(end_openmp - start_openmp).count();
+    end = clock();
+    duration = end - start;
 
-    printf("Matrix openmp multiplication completed in %lld microseconds.\n", duration_openmp);
+    printf("Matrix openmp multiplication completed in %lld microseconds.\n", duration);
     //comparar la matrix
     if (compareMatrices(C, "matrizC_orig.txt", rows_c, cols_c)) {
         printf("Matrices match.\n");
