@@ -93,23 +93,19 @@ void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t
             for (uint32_t k = 0; k < cols_a; k++) {
                 C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
             }
-            // Round Results to 10 decimals
-            C[i * cols_b + j] = round(C[i * cols_b + j] * 1e10) / 1e10;
         }
     }
 }
 
 void multiplyMatrices_openmp(double* A, double* B, double* C, uint32_t rows_a, uint32_t cols_a, uint32_t cols_b) {
     omp_set_num_threads(omp_get_num_procs());
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2)
     for (uint32_t i = 0; i < rows_a; i++) {
         for (uint32_t j = 0; j < cols_b; j++) {
             C[i * cols_b + j] = 0;
             for (uint32_t k = 0; k < cols_a; k++) {
                 C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
             }
-            // Round Results to 10 decimals
-            C[i * cols_b + j] = round(C[i * cols_b + j] * 1e10) / 1e10;
         }
     }
 }
@@ -124,9 +120,7 @@ int compareMatrices(double* C, const char* filename, uint32_t rows, uint32_t col
                     fclose(inputFile);
                     return 0;
                 }
-                double roundedC = round(C[i * cols + j] * 1e10) / 1e10;
-                double roundedValue = round(value * 1e10) / 1e10;
-                if (roundedC != roundedValue) {
+                if (abs((C[i * cols + j]- value))>1e-10) {
                     fclose(inputFile);
                     return 0;
                 }
@@ -141,18 +135,7 @@ int compareMatrices(double* C, const char* filename, uint32_t rows, uint32_t col
 void print_table(double serial[5], double openmp[5], double cuda[5]) {
     int rows = 8;
     int columns = 4;
-    char* table[8][4] = {
-        {"Corrida ", "Serial", "OpenMP", "CUDA"},
-        {"1", "", "", ""},
-        {"2", "", "", ""},
-        {"3", "", "", ""},
-        {"4", "", "", ""},
-        {"5", "", "", ""},
-        {"Promedio", "", "", ""},
-        {"% vs Serial", "", "", ""}
-    };
-
-
+    
     // Print the table header
     printf("| %-12s ", "Corrida ");
     printf("| %-12s ", "Serial");
@@ -192,7 +175,7 @@ void print_table(double serial[5], double openmp[5], double cuda[5]) {
     printf("|\n");
     //print porcentajes
     printf("| %-12s ", "% vs Serial");
-    printf("| %-12f ", 100);
+    printf("| %-12d ", 100);
     printf("| %-12f ", promedio_openmp/promedio_serial*100);
     printf("| %-12f ", promedio_cuda/promedio_serial*100);
     printf("|\n");
@@ -202,8 +185,6 @@ void print_table(double serial[5], double openmp[5], double cuda[5]) {
         printf("+--------------");
     }
     printf("+\n");
-
-
 }
 
 int main() {
