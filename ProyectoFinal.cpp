@@ -113,7 +113,7 @@ void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t
 void multiplyMatrices_openmp(double* A, double* B, double* C, uint32_t rows_a, uint32_t cols_a, uint32_t cols_b)
 {
     omp_set_num_threads(omp_get_num_procs());
-    // Realiza la multiplicación de matrices y almacena el resultado en C
+    // Multiply matrices A and B and store the result in C
     #pragma omp parallel for
     for (uint32_t i = 0; i < rows_a; i++) {
         for (uint32_t j = 0; j < cols_b; j++) {
@@ -139,11 +139,9 @@ bool compareMatrices(double* C, const std::string& filename, uint32_t rows, uint
                 
                 
                 if (abs((C[i * cols + j]- value))>1e-10) {
-                    std::cout << std::fixed;
-                    std::cout.precision(10);
-                    std::cout<<"C="<<C[i * cols + j]<<" Txt"<<value<<std::endl;
+                    printf("C= %.10f Txt= %.10f\n", C[i * cols + j], value);
                     inputFile.close();
-                    return false;  // Values don't match
+                    return false;  // If values don't match
                 }
             }
         }
@@ -231,20 +229,20 @@ int main()
         printf("Failed to open matrizC.txt for writing.\n");
     }
 
-     // Realizar la multiplicación de matrices y medir el tiempo de ejecución con openmp
+    // Perform matrix multiplication and measure execution time
     start = clock();
     multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
     end = clock();
     duration = end - start;
 
-    printf("Matrix openmp multiplication completed in %lld microseconds.\n", duration);
-    //comparar la matrix
+    printf("Matrix openmp multiplication completed in %d microseconds.\n", duration);
+    // Compare matrices
     if (compareMatrices(C, "matrizC_orig.txt", rows_c, cols_c)) {
         printf("Matrices match.\n");
     } else {
         printf("Matrices do not match.\n");
     }
-    // Liberar memoria
+    // Free memory
     free(A);
     free(B);
     free(C);
