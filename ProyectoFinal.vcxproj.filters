@@ -26,5 +26,8 @@
     <Text Include="matrizA.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="matrizC.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -2,10 +2,16 @@
 #include <chrono>
 #include <fstream>
 #include <cstdint>
+#include <omp.h>
+//#include <pthread.h>
+#include <cmath>
+#include <iomanip>
 
 uint32_t rows_a, cols_a, rows_b, cols_b, rows_c, cols_c;
 uint32_t size_a, size_b, size_c;
 double* A = nullptr, * B = nullptr, * C = nullptr;
+clock_t start, end, duration;
+
 
 int validateSize(int rows, int cols, char matrix) {
     FILE* file;
@@ -104,6 +110,50 @@ void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t
 }
 
 
+void multiplyMatrices_openmp(double* A, double* B, double* C, uint32_t rows_a, uint32_t cols_a, uint32_t cols_b)
+{
+    omp_set_num_threads(omp_get_num_procs());
+    // Realiza la multiplicación de matrices y almacena el resultado en C
+    #pragma omp parallel for
+    for (uint32_t i = 0; i < rows_a; i++) {
+        for (uint32_t j = 0; j < cols_b; j++) {
+            C[i * cols_b + j] = 0;
+            #pragma omp simd
+            for (uint32_t k = 0; k < cols_a; k++) {
+                C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
+            }
+        }
+    }
+}
+
+bool compareMatrices(double* C, const std::string& filename, uint32_t rows, uint32_t cols) {
+    std::ifstream inputFile(filename);
+    if (inputFile.is_open()) {
+        for (uint32_t i = 0; i < rows; i++) {
+            for (uint32_t j = 0; j < cols; j++) {
+                double value;
+                if (!(inputFile >> value)) {
+                    inputFile.close();
+                    return false;  // Failed to read a value from the file
+                }
+                
+                
+                if (abs((C[i * cols + j]- value))>1e-10) {
+                    std::cout << std::fixed;
+                    std::cout.precision(10);
+                    std::cout<<"C="<<C[i * cols + j]<<" Txt"<<value<<std::endl;
+                    inputFile.close();
+                    return false;  // Values don't match
+                }
+            }
+        }
+        inputFile.close();
+        return true;  // Matrices are identical
+    }
+    return false;  // Failed to open the file
+}
+
+
 int main()
 {
     askForInputsA();
@@ -157,21 +207,22 @@ int main()
 
 
     // Perform matrix multiplication and measure execution time
-    auto start = std::chrono::high_resolution_clock::now();
+    start = clock();
     multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-
+    end = clock();
+    duration = end - start;
+   
     printf("Matrix multiplication completed in %lld microseconds.\n", duration);
 
     // Write matrix C to file
     std::ofstream outputFile("matrizC.txt");
     if (outputFile.is_open()) {
+        outputFile << std::fixed;
+        outputFile.precision(10);
         for (uint32_t i = 0; i < rows_c; i++) {
             for (uint32_t j = 0; j < cols_c; j++) {
-                outputFile << C[i * cols_c + j] << " ";
+                outputFile << C[i * cols_c + j] << "\n";
             }
-            outputFile << "\n";
         }
         outputFile.close();
         printf("Matrix C written to matrizC.txt.\n");
@@ -180,7 +231,20 @@ int main()
         printf("Failed to open matrizC.txt for writing.\n");
     }
 
-    // Free memory
+     // Realizar la multiplicación de matrices y medir el tiempo de ejecución con openmp
+    start = clock();
+    multiplyMatrices_openmp(A, B, C, rows_a, cols_a, cols_b);
+    end = clock();
+    duration = end - start;
+
+    printf("Matrix openmp multiplication completed in %lld microseconds.\n", duration);
+    //comparar la matrix
+    if (compareMatrices(C, "matrizC_orig.txt", rows_c, cols_c)) {
+        printf("Matrices match.\n");
+    } else {
+        printf("Matrices do not match.\n");
+    }
+    // Liberar memoria
     free(A);
     free(B);
     free(C);

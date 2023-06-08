@@ -134,6 +134,7 @@
   <ItemGroup>
     <Text Include="matrizA.txt" />
     <Text Include="matrizB.txt" />
+    <Text Include="matrizC.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,2 +1,6 @@
 ﻿  ProyectoFinal.cpp
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\ProyectoFinal\ProyectoFinal.cpp(215,12): warning C4477: 'printf' : format string '%lld' requires an argument of type '__int64', but variadic argument 1 has type 'clock_t'
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\ProyectoFinal\ProyectoFinal.cpp(215,12): message : consider using '%ld' in the format string
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\ProyectoFinal\ProyectoFinal.cpp(240,12): warning C4477: 'printf' : format string '%lld' requires an argument of type '__int64', but variadic argument 1 has type 'clock_t'
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\ProyectoFinal\ProyectoFinal.cpp(240,12): message : consider using '%ld' in the format string
   ProyectoFinal.vcxproj -> C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\ProyectoFinal\x64\Debug\ProyectoFinal.exe
