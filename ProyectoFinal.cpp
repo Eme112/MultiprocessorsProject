@@ -55,7 +55,6 @@ int validateSize(int rows, int cols, char matrix) {
     }
 }
 
-
 void askForInputsA() {
     printf("Enter number of rows for matrix A: ");
     scanf_s("%d", &rows_a);
@@ -99,7 +98,7 @@ bool readMatrixFromFile(const std::string& filename, double*& matrix, uint32_t r
 
 void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t cols_a, uint32_t cols_b)
 {
-    // Realiza la multiplicación de matrices y almacena el resultado en C
+    // Multiply matrices A and B and store the result in C
     for (uint32_t i = 0; i < rows_a; i++) {
         for (uint32_t j = 0; j < cols_b; j++) {
             C[i * cols_b + j] = 0;
@@ -206,7 +205,8 @@ int main()
         printf("Matrix B read from file.\n");
     }
 
-    // Realizar la multiplicación de matrices y medir el tiempo de ejecución
+
+    // Perform matrix multiplication and measure execution time
     start = clock();
     multiplyMatrices(A, B, C, rows_a, cols_a, cols_b);
     end = clock();
@@ -214,7 +214,7 @@ int main()
    
     printf("Matrix multiplication completed in %lld microseconds.\n", duration);
 
-    // Escribir la matriz resultante en el archivo matrizC.txt
+    // Write matrix C to file
     std::ofstream outputFile("matrizC.txt");
     if (outputFile.is_open()) {
         outputFile << std::fixed;
