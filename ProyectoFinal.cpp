@@ -105,8 +105,6 @@ void multiplyMatrices(double* A, double* B, double* C, uint32_t rows_a, uint32_t
             for (uint32_t k = 0; k < cols_a; k++) {
                 C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
             }
-            //Round Results to 10 decimals
-            C[i * cols_b + j] = std::round(C[i * cols_b + j] * 1e10) / 1e10;
         }
     }
 }
@@ -124,8 +122,6 @@ void multiplyMatrices_openmp(double* A, double* B, double* C, uint32_t rows_a, u
             for (uint32_t k = 0; k < cols_a; k++) {
                 C[i * cols_b + j] += A[i * cols_a + k] * B[k * cols_b + j];
             }
-            //Round Results to 10 decimals
-            C[i * cols_b + j] = std::round(C[i * cols_b + j] * 1e10) / 1e10;
         }
     }
 }
@@ -140,11 +136,12 @@ bool compareMatrices(double* C, const std::string& filename, uint32_t rows, uint
                     inputFile.close();
                     return false;  // Failed to read a value from the file
                 }
-                // Round the value in matrix C to 10 decimals after the point
-                double roundedC = std::round(C[i * cols + j] * 1e10) / 1e10;
-                // Round the value from the file to 10 decimals after the point
-                double roundedValue = std::round(value * 1e10) / 1e10;
-                if (roundedC != roundedValue) {
+                
+                
+                if (abs((C[i * cols + j]- value))>1e-10) {
+                    std::cout << std::fixed;
+                    std::cout.precision(10);
+                    std::cout<<"C="<<C[i * cols + j]<<" Txt"<<value<<std::endl;
                     inputFile.close();
                     return false;  // Values don't match
                 }
@@ -241,7 +238,7 @@ int main()
 
     printf("Matrix openmp multiplication completed in %lld microseconds.\n", duration_openmp);
     //comparar la matrix
-    if (compareMatrices(C, "matrizC.txt", rows_c, cols_c)) {
+    if (compareMatrices(C, "matrizC_orig.txt", rows_c, cols_c)) {
         printf("Matrices match.\n");
     } else {
         printf("Matrices do not match.\n");
