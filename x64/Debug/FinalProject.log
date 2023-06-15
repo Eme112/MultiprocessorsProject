@@ -1,9 +1,9 @@
 ﻿  Compiling CUDA source file kernel.cu...
   
-  C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static -Xcompiler -fopenmp -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\x64\Debug\kernel.cu.obj "C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\kernel.cu" 
+  C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static -Xcompiler -fopenmp -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\x64\Debug\kernel.cu.obj "C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\kernel.cu" 
 cl : Command line warning D9002: ignoring unknown option '-fopenmp'
 cl : Command line warning D9002: ignoring unknown option '-fopenmp'
-C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\kernel.cu(171): warning #177-D: variable "rows" was declared but never referenced
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\kernel.cu(171): warning #177-D: variable "rows" was declared but never referenced
         int rows = 8;
             ^
   
@@ -11,7 +11,9 @@ C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\kernel.cu
   
   kernel.cu
 cl : Command line warning D9002: ignoring unknown option '-fopenmp'
-  tmpxft_0000696c_00000000-7_kernel.cudafe1.cpp
-C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\kernel.cu(256): warning C4018: '>': signed/unsigned mismatch
-C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\kernel.cu(256): warning C4018: '>': signed/unsigned mismatch
-  FinalProject.vcxproj -> C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\x64\Debug\FinalProject.exe
+  tmpxft_00008620_00000000-7_kernel.cudafe1.cpp
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\kernel.cu(256): warning C4018: '>': signed/unsigned mismatch
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\kernel.cu(256): warning C4018: '>': signed/unsigned mismatch
+     Creating library C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\x64\Debug\FinalProject.lib and object C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\x64\Debug\FinalProject.exp
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  FinalProject.vcxproj -> C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\x64\Debug\FinalProject.exe

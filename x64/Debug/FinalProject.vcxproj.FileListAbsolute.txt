@@ -1,1 +1,2 @@
 C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject\x64\Debug\FinalProject.exe
+C:\Users\eme_p\Documents\Tec\Semestre10\Multiprocesadores\FinalProject2\x64\Debug\FinalProject.exe
